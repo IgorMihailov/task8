@@ -2,20 +2,24 @@ import QtQuick 2.9
 import QtQuick.Window 2.2
 
 Window {
+    id: window
     visible: true
-    width: 800
-    height: 600
+    minimumWidth: 1024
+    minimumHeight: 768
+    maximumWidth: 1024
+    maximumHeight: 768
     title: qsTr("The GAME")
 
     //Задний план
-    Rectangle {
+    Rectangle
+    {
         id: background
         x: 0
         y: 0
-        width: 800
-        height: 600
+        width: window.width
+        height: window.height
         color: "#d3d3d3"
-       }
+    }
 
     //Игрок
     Rectangle
@@ -34,31 +38,33 @@ Window {
         property int xv: 0
         property int yv: 0
 
-                Keys.onPressed:
-                {
-                    if (event.isAutoRepeat) return;
+        //При нажатии клавиши
+        Keys.onPressed:
+        {
+            if (event.isAutoRepeat) return;
 
 
-                    switch (event.key)
-                    {
-                        case Qt.Key_Left: xv -= 2; break;
-                        case Qt.Key_Right: xv += 2; break;
-                    }
-
-                }
-
-                Keys.onReleased:
-                {
-                    if (event.isAutoRepeat) return;
-                    switch (event.key)
-                    {
-                        case Qt.Key_Left: xv += 2; break;
-                        case Qt.Key_Right: xv -= 2; break;
-                    }
-
-                }
+            switch (event.key)
+            {
+                case Qt.Key_Left: xv -= 2; break;
+                case Qt.Key_Right: xv += 2; break;
+            }
 
 
+        }
+
+        //При разжатии клавиши
+        Keys.onReleased:
+        {
+            if (event.isAutoRepeat) return;
+            switch (event.key)
+            {
+                case Qt.Key_Left: xv += 2; break;
+                case Qt.Key_Right: xv -= 2; break;
+            }
+        }
+
+                //Таймер обновления экрана и отрисовки объектов
                 Timer
                 {
                         interval: 8
@@ -66,7 +72,13 @@ Window {
                         repeat: true
                         onTriggered:
                         {
-                            player.x += player.xv
+                                player.x += player.xv
+
+                                //Ограничение перемещения игрока краями экрана
+                                if (player.x + player.xv <= 0)
+                                    player.x = 0;
+                                if (player.x >= background.width - player.width)
+                                    player.x = background.width - player.width;
                         }
                 }
     }
