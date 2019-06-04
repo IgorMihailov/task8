@@ -1,7 +1,29 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>back.png</file>
-        <file>1.png</file>
+        <file>Gameplay.qml</file>
+        <file>Menu.qml</file>
+        <file>Main.qml</file>
+        <file>Leaderboard.qml</file>
+        <file>GameOver.qml</file>
+        <file>checkcollision.cpp</file>
+        <file>functions.h</file>
+        <file>main.cpp</file>
+        <file>save.cpp</file>
+        <file>sources/1.png</file>
+        <file>sources/2.png</file>
+        <file>sources/back.png</file>
+        <file>sources/crate1.png</file>
+        <file>sources/fireball.png</file>
+        <file>sources/health_crate.png</file>
+        <file>sources/heart1.png</file>
+        <file>sources/heart2.png</file>
+        <file>sources/heart3.png</file>
+        <file>sources/spike.png</file>
+        <file>sources/super_crate.png</file>
+        <file>leaderboard.txt</file>
+        <file>load.cpp</file>
+        <file>sort.cpp</file>
+        <file>sources/long-platform.png</file>
+        <file>sources/menuBG.png</file>
     </qresource>
 </RCC>
