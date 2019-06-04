@@ -1,135 +1,80 @@
-import QtQuick 2.9
-import QtQuick.Window 2.2
+import QtQuick 2.0
+import QtQuick.Window 2.3
 
-Window
-{
+Window {
     id: window
     visible: true
-    minimumWidth: 1024
-    minimumHeight: 768
-    maximumWidth: 1024
-    maximumHeight: 768
+    minimumWidth: 1000
+    minimumHeight: 800
+    maximumWidth: 1000
+    maximumHeight: 800
     title: qsTr("The GAME")
 
-    //Задний план
-    Rectangle
-    {
-        id: background
-        x: 0
-        y: 0
-        width: window.width
-        height: window.height
-        Image {
-            id: back
-            source: "back.png"
-            width: parent.width
-            height: parent.height
-        }
-    }
+    Rectangle {
+        anchors.fill: parent
+        visible: true
+        id: main
+        state: "menu"
 
-    //Игрок
-
-
-        Image{
-            id: player
-            x: background.width / 2
-            y: background.height - 300
-            width: 70
-            height: 80
-            opacity: 1
-            visible: true
-            clip: false
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/1.png"
-            focus: true
-
-        property real xv: 0
-        property real yv: 0
-
-        /*Ускорение свободного падения*/
-        property real accel: 0
-        /*Стоит ли игрок на чём-то*/
-        property bool standing: false
-        /*Прыгает ли игрок*/
-        property bool jumping: false
-
-        //При нажатии клавиши
-        Keys.onPressed:
-        {
-            if (event.isAutoRepeat) return;
-
-
-            switch (event.key)
-            {
-                case Qt.Key_Left: xv -= 2; break;
-                case Qt.Key_Right: xv += 2; break;
-
-                case Qt.Key_Up: jumping = true; break;
+        Menu {
+            id: menu
+            onGameStarted: {
+                parent.state = "game"
+                gameplay.newgame()
             }
-
-
+            onLeaderboardOpened: parent.state = "leaderboard"
+            onWindowClosed: window.close()
         }
 
-        //При разжатии клавиши
-        Keys.onReleased:
-        {
-            if (event.isAutoRepeat) return;
-            switch (event.key)
-            {
-                case Qt.Key_Left: xv += 2; break;
-                case Qt.Key_Right: xv -= 2; break;
+        Gameplay {
+            id: gameplay
+            onGameStopped: parent.state = "menu"
+            onEndGame: parent.state = "death"
+        }
 
-                /*Прыжки*/
-                case Qt.Key_Up: jumping = false; break;
+        Leaderboard {
+            id: leaderboard
+            onLeaderboardClosed: parent.state = "menu"
+        }
+
+        GameOver {
+            id: gameover
+            onGameoverClosed: parent.state = "menu"
+            onGameRestarted: {
+                parent.state = "game"
+                gameplay.newgame();
             }
         }
 
-                //Таймер обновления экрана и отрисовки объектов
-                Timer
-                {
-                        interval: 3
-                        running: true
-                        repeat: true
-                            onTriggered:
-                            {
-                                    player.x += player.xv
-
-                                /*Если игрок не в воздухе и зажата клавиша прыжка, то прыгаем*/
-                                if (player.jumping == true && player.standing == true)
-                                {
-                                    player.yv = -5;
-                                    /*При прыжке персонаж не стоит*/
-                                    player.standing = false;
-                                }
-
-                                /*Гравитация*/
-                                player.yv += player.accel;
-                                player.y += player.yv
-                               /*Проверка на коллизию*/
-                               if (player.y + player.height > background.height)
-                               {
-                                    player.y = background.height - player.height;
-                                    player.accel = 0;
-                                    player.yv = 0;
-                                    player.standing = true;
-                               }
-                               else
-                               {
-                                    player.accel = 0.1;
-                                    player.standing = false;
-                               }
-
-                               //Ограничение перемещения игрока краями экрана с учётом размеров персонажа
-                               if (player.x + player.xv <= -15)
-                                    player.x = -15;
-                               if (player.x >= background.width - player.width + 15 )
-                                    player.x = background.width - player.width + 15;
-                            }
-                }
+        states: [
+            State {
+                name: "menu"
+                PropertyChanges {target: menu; visible: true}
+                PropertyChanges {target: gameplay; visible: false}
+                PropertyChanges {target: leaderboard; visible: false}
+                PropertyChanges {target: gameover; visible: false}
+            },
+            State {
+                name: "game"
+                PropertyChanges {target: menu; visible: false}
+                PropertyChanges {target: gameplay; visible: true}
+                PropertyChanges {target: leaderboard; visible: false}
+                PropertyChanges {target: gameover; visible: false}
+            },
+            State {
+                name: "leaderboard"
+                PropertyChanges {target: menu; visible: false}
+                PropertyChanges {target: gameplay; visible: false}
+                PropertyChanges {target: leaderboard; visible: true}
+                PropertyChanges {target: gameover; visible: false}
+            },
+            State {
+                name: "death"
+                PropertyChanges {target: menu; visible: false}
+                PropertyChanges {target: gameplay; visible: false}
+                PropertyChanges {target: leaderboard; visible: false}
+                PropertyChanges {target: gameover; visible: true}
+            }
+        ]
     }
-
-
-
 }
-
-
